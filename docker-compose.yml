@@ -1,0 +1,45 @@
+services:
+  frontend:
+    build:
+      context: ./hotel-frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      - NODE_ENV=production
+    networks:
+      - react-express
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./hotel-backend
+      dockerfile: Dockerfile.prod
+    ports:
+      - 7000:7000 
+    restart: on-failure  
+    depends_on:
+      - mongo
+    networks:
+      - express-mongo
+      - react-express
+      
+  mongo:
+    container_name: mongo
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      DB_HOST: localhost
+      DB_PORT: 27017
+      DB_DATABASE: dev
+    networks:
+      - express-mongo
+
+networks:
+  react-express:
+  express-mongo:
+
+volumes:
+  mongo_data:
